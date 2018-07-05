@@ -18,23 +18,20 @@ class Post < ActiveRecord::Base
 
   validates :category, inclusion: {in: %w(Fiction Non-Fiction)}
 
-  # validate :isClickbait?
-  #
-  # def isClickbait?
-  #
-  #   phrase1 = "Won't Believe"
-  #   phrase2 = "Secret"
-  #   phrase3 = "Top"
-  #   phrase4 = "Guess"
-  #
-  #   phrases = [phrase1,phrase2,phrase3,phrase4]
-  #
-  #   phrases.each do |bait|
-  #     if title.include? bait
-  #         title == true
-  #     end
-  #   end
-  #  errors.add(:title, "Must include clickbait.")
-  # end
+  validate :is_clickbait?
 
-end
+
+  CLICKBAIT_PATTERNS = [
+    /Won't Believe/i,
+    /Secret/i,
+    /Top [0-9]*/i,
+    /Guess/i
+  ]
+
+  def is_clickbait?
+    if CLICKBAIT_PATTERNS.none? { |pat| pat.match title }
+      errors.add(:title, "must be clickbait")
+    end
+  end
+
+end #Ends Post Class
